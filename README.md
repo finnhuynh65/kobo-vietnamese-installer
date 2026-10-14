@@ -51,11 +51,13 @@ The browser opens at <http://127.0.0.1:8765>. Connect the Kobo by USB and tap **
 
 ### Vietnamese fonts and language pack
 
-The advanced font rebuild contains 16 system-font replacements plus four Courier-compatible user fonts. The normal **Install Vietnamese support** action additionally includes the optional language payload from redphx's verified `v20260319` release: `trans_vi.qm`, `libtiengviet.so`, and a small configuration hook that adds `Extra: vi` to Kobo's language list. It has no NickelMenu or KOReader payload.
+The advanced font rebuild contains 16 system-font replacements plus four Courier-compatible user fonts. The normal **Install Vietnamese support** action additionally includes the optional language payload from redphx's verified `v20260319` release: `trans_vi.qm` and a configuration hook that adds `Extra: vi` to Kobo's language list. It has no NickelMenu or KOReader payload.
 
 Fonts and language support require firmware 4.x. The installer backs up an existing staged `.kobo/KoboRoot.tgz` before replacing it. After reboot, choose **More → Settings → Language and dictionaries → Select your Language → Extra: vi** if Kobo does not select it automatically. The advanced **Rebuild KoboRoot.tgz** action remains font-only; the normal install action creates a combined font + language package, or a language-only package when only the language pack is selected.
 
-For the complete Vietnamese interface, keyboard, and automatic repair behavior beyond this focused language pack, use the original [Kobo Tiếng Việt](https://github.com/redphx/kobo-tieng-viet) project by redphx.
+This package excludes `libtiengviet.so`, which contains upstream keyboard hooks and automatic font repair. Reapply the font fix after a firmware update if Vietnamese rendering breaks.
+
+To migrate an earlier installation, reinstall **Vietnamese language pack** (or **Install Vietnamese support**), safely eject, and let Kobo restart. The configuration hook moves an existing `/usr/local/Kobo/imageformats/libtiengviet.so` to `.adds/tiengviet/libtiengviet.so.disabled`, outside Nickel's plugin directory. Font-only installs do not disable an existing library. USB status only detects the locale setting; it cannot confirm whether a system plugin is loaded. Device-wide reading or sleep freezes remain unproven as a result of this patch.
 
 ### Kobo dictionary
 

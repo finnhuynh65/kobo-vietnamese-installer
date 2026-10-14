@@ -15,7 +15,9 @@ All 20 generated fonts are copied unchanged from [redphx/kobo-tieng-viet](https:
 - 16 Avenir, Georgia, Rakuten Sans, and Rakuten Serif replacements under `usr/local/Trolltech/QtEmbedded-4.6.2-arm/lib/fonts/`.
 - 4 Courier-compatible fonts under `mnt/onboard/fonts/` for correct monospace rendering.
 
-The standalone rebuild is font-only. During installation, the selected language option adds `libtiengviet.so`, `trans_vi.qm`, `update_conf.sh`, and its udev rule to the staged package. A language-only selection contains those files without fonts.
+The standalone rebuild is font-only. The language option adds `trans_vi.qm`, a locally modified `update_conf.sh`, and its upstream udev rule. A language-only selection contains those three files without fonts. The upstream `libtiengviet.so` is retained for provenance but excluded from generated packages: its keyboard hooks contain unchecked optional symbols and layout access.
+
+On the next language installation, `update_conf.sh` moves an existing `libtiengviet.so` outside Nickel's plugin directory to `/mnt/onboard/.adds/tiengviet/libtiengviet.so.disabled` before configuring the locale. Reboot releases an already loaded copy. Font-only installs do not perform this migration. Automatic font repair is removed, so no `.adds/tiengviet/fonts` backups are needed; users must reapply fonts after firmware updates if rendering breaks. The language validator rejects unexpected files (including the legacy plugin), links, traversal paths, and duplicate file entries. Locale detection over USB cannot establish system-library presence or load state.
 
 The validator checks each source and archive font by SHA-256. Installation is limited to firmware 4.x, backs up an existing staged `.kobo/KoboRoot.tgz`, atomically copies the archive, and verifies the copied hash. No compiler or container is involved.
 

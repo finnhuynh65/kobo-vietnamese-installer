@@ -1,5 +1,12 @@
 #!/bin/sh
 
+# Keep the legacy keyboard/font-repair plugin outside Nickel's plugin directory.
+legacy="/usr/local/Kobo/imageformats/libtiengviet.so"
+disabled="/mnt/onboard/.adds/tiengviet/libtiengviet.so.disabled"
+if [ -e "$legacy" ]; then
+    mkdir -p "${disabled%/*}" && mv -f "$legacy" "$disabled" || exit 1
+fi
+
 file="/mnt/onboard/.kobo/Kobo/Kobo eReader.conf"
 
 locale="vi"

@@ -1,10 +1,10 @@
 {
-  "build/KoboRoot.tgz": "8840a8e8fb9c4e1823828d2a565bd63cdade43528b79cf6753f86c7a90388416",
+  "build/KoboRoot.tgz": "9caa8349b5b05819473d05cbd3a234f1c58bc0671e91ae58036915f60b217d2a",
   "vendor/vietnamese-fonts/Avenir-Bold.ttf": "9d043adf08d3025fcf9cd38f372d988b861fd96334d6928aae204a79212cbd1f",
   "vendor/vietnamese-language/libtiengviet.so": "f38405da9b87ac6536ed165a1d4377ffaecd1c69b21d32306233a8e97a873573",
   "vendor/vietnamese-language/trans_vi.qm": "510263d8e44d0919a4d18b56b79c04f3077b8cbabc1a1d4d895270d5d1887fd2",
   "vendor/vietnamese-language/update_conf.rules": "7f5f128e93beed997c5c309a0557ee1152f0d14949fc48585f5f0b142fad1231",
-  "vendor/vietnamese-language/update_conf.sh": "eb3d199209271f499830525bdaa72e1739237fa44b67b2483bcbad6344fa4a10",
+  "vendor/vietnamese-language/update_conf.sh": "c6d632d36c07ee375b7878d9c9163f0f532d3e4aa889d18e8bb59221cb72384b",
   "vendor/vietnamese-fonts/Avenir-BoldItalic.ttf": "5c310130c91f947fcfb1f4e9e0e692d11ab2037ce4f451fd41cfebc1de6e1216",
   "vendor/vietnamese-fonts/Avenir-Italic.ttf": "119e3f8f8383290f12736010fbee78af22961d3b67f8fb2da456ab64cf8344f6",
   "vendor/vietnamese-fonts/Avenir.ttf": "28ad23d9a104648fc9274383596f1eed13405b0bbbf1582b437300aa97236d8c",
@@ -23,5 +23,7 @@
   "vendor/vietnamese-fonts/mono/Courier Mono-Bold.ttf": "51050c3594d6a9b4d894fe2784e1dffd3238b0c4b9d7edffd8bac611c3386781",
   "vendor/vietnamese-fonts/mono/Courier Mono-BoldItalic.ttf": "0e35a314960b08b253f2753f7a719e26b4d11d80f76ffd44004ed99954d14b89",
   "vendor/vietnamese-fonts/mono/Courier Mono-Italic.ttf": "891fdaa8a4c0173edd1cb08ab65d1c7941f54c0b27a4149a7c56bf46a0889a19",
-  "vendor/vietnamese-fonts/mono/Courier Mono-Regular.ttf": "568c6d09097a20c8ad5b7c5a290619cf4150dc4db519f73a7e8c3ab7e70476d2"
+  "vendor/vietnamese-fonts/mono/Courier Mono-Regular.ttf": "568c6d09097a20c8ad5b7c5a290619cf4150dc4db519f73a7e8c3ab7e70476d2",
+  "vercel-site/assets/KoboRoot-language.tgz": "09e98b1b20c5adfc2cb2a71509e380427cbc64664a73f8c36b8d4422c6bac6a1",
+  "vercel-site/assets/KoboRoot-combined.tgz": "eb03f2db0c3ea5926002451812845351f2b7d02e8d8386dddf870144c1d5c564"
 }

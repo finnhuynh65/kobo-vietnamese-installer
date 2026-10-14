@@ -53,7 +53,6 @@ MAX_DICTIONARY_DOWNLOAD = 32 * 1024 * 1024
 FONT_DESTINATION = "usr/local/Trolltech/QtEmbedded-4.6.2-arm/lib/fonts"
 MONO_FONT_DESTINATION = "mnt/onboard/fonts"
 LANGUAGE_ASSETS = {
-    "usr/local/Kobo/imageformats/libtiengviet.so": VIETNAMESE_LANGUAGE / "libtiengviet.so",
     "usr/local/Kobo/translations/trans_vi.qm": VIETNAMESE_LANGUAGE / "trans_vi.qm",
     "etc/udev/rules.d/update_conf.rules": VIETNAMESE_LANGUAGE / "update_conf.rules",
     "root/update_conf.sh": VIETNAMESE_LANGUAGE / "update_conf.sh",
@@ -323,11 +322,28 @@ def validate_font_overlay_archive(path: Path, require_nickelmenu: bool = False) 
 
 def validate_language_overlay_archive(path: Path) -> dict:
     expected = {target: sha256_file(source) for target, source in LANGUAGE_ASSETS.items()}
+    allowed = set(expected) | {
+        f"{destination}/{font.name}"
+        for directory, destination in (
+            (VIETNAMESE_FONTS, FONT_DESTINATION),
+            (VIETNAMESE_MONO_FONTS, MONO_FONT_DESTINATION),
+        )
+        for font in directory.glob("*.ttf")
+    }
     found: dict[str, str] = {}
+    seen: set[str] = set()
     with tarfile.open(path, "r:gz") as archive:
         for member in archive.getmembers():
             clean = member.name.removeprefix("./")
-            if clean not in expected or not member.isfile():
+            pure = PurePosixPath(clean)
+            if pure.is_absolute() or ".." in pure.parts:
+                raise InstallerError(f"Unsafe archive path: {member.name}")
+            if member.isdir():
+                continue
+            if not member.isfile() or clean not in allowed or clean in seen:
+                raise InstallerError(f"Unexpected Vietnamese language entry: {member.name}")
+            seen.add(clean)
+            if clean not in expected:
                 continue
             payload = archive.extractfile(member)
             if payload is None:

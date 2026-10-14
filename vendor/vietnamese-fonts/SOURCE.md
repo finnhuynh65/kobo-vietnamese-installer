@@ -7,6 +7,6 @@ Original project and author: **Kobo Tiếng Việt by redphx**.
 - The 16 top-level files are redphx's generated replacements for Kobo's Avenir, Georgia, Rakuten Sans, and Rakuten Serif system fonts.
 - The four files in `mono/` are redphx's generated Courier-compatible fonts for Kobo's user-font directory.
 
-This installer uses only that release's generated font files. It does not copy or enable the upstream Vietnamese translation, keyboard support, `libtiengviet.so`, locale-changing script, or auto-repair service. Users who want the complete upstream experience should install it directly from the original project.
+The font-only package uses only these generated fonts. The separately selectable language package includes the upstream translation and a modified locale script, but excludes `libtiengviet.so`, keyboard hooks, and automatic font repair. Reapply the fonts after a firmware update if rendering breaks.
 
 The upstream build script identifies Roboto, Bitter, and Source Code Pro as the source families and rewrites their metadata for Kobo's expected family and style names. Refer to the original project for font-generation details, source-font terms, support, and updates.

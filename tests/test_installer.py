@@ -4,6 +4,7 @@ import base64
 import io
 import json
 import os
+import subprocess
 import tempfile
 import tarfile
 import threading
@@ -454,6 +455,88 @@ class InstallerTests(unittest.TestCase):
             with tarfile.open(staged, "r:gz") as archive:
                 names = {member.name for member in archive if member.isfile()}
             self.assertEqual(names, set(core.LANGUAGE_ASSETS))
+            self.assertNotIn("usr/local/Kobo/imageformats/libtiengviet.so", names)
+
+    def test_combined_language_package_excludes_hooks_and_keeps_fonts(self):
+        with tempfile.TemporaryDirectory() as value:
+            root = Path(value)
+            package = root / "KoboRoot.tgz"
+            with mock.patch.object(core, "NICKELMENU_PACKAGE", package), mock.patch.object(
+                core, "NICKELMENU_CHECKSUM", root / "sum"
+            ), mock.patch.object(core, "NICKELMENU_METADATA", root / "meta.json"):
+                result = core.build_font_package(include_language=True)
+            self.assertEqual(result["fonts"], 20)
+            self.assertEqual(result["languageFiles"], 3)
+            with tarfile.open(package) as archive:
+                self.assertEqual(len(archive.getmembers()), 23)
+                self.assertNotIn("usr/local/Kobo/imageformats/libtiengviet.so", archive.getnames())
+
+    def test_language_validator_rejects_legacy_plugin_and_unsafe_entries(self):
+        with tempfile.TemporaryDirectory() as value:
+            package = Path(value) / "KoboRoot.tgz"
+            entries = [
+                ("usr/local/Kobo/imageformats/libtiengviet.so", tarfile.REGTYPE),
+                ("../escape", tarfile.REGTYPE),
+                ("/absolute", tarfile.REGTYPE),
+                ("root/update_conf.sh", tarfile.SYMTYPE),
+                ("root/update_conf.sh", tarfile.REGTYPE),
+            ]
+            for name, entry_type in entries:
+                with self.subTest(name=name, entry_type=entry_type):
+                    with tarfile.open(package, "w:gz") as archive:
+                        for target, source in core.LANGUAGE_ASSETS.items():
+                            archive.add(source, arcname=target)
+                        info = tarfile.TarInfo(name)
+                        info.type = entry_type
+                        info.linkname = "/tmp/target" if entry_type == tarfile.SYMTYPE else ""
+                        archive.addfile(info, io.BytesIO(b""))
+                    with self.assertRaises(core.InstallerError):
+                        core.validate_language_overlay_archive(package)
+
+    def test_language_migration_preserves_library_and_config_without_hardware(self):
+        for existing in (False, True):
+            with self.subTest(existing=existing), tempfile.TemporaryDirectory() as value:
+                root = Path(value)
+                legacy = root / "libtiengviet.so"
+                disabled = root / ".adds/tiengviet/libtiengviet.so.disabled"
+                config = root / "Kobo eReader.conf"
+                config.write_text("[ApplicationPreferences]\nExtraLocales=en\nCurrentLocale=en\nKeepSetting=yes\n")
+                if existing:
+                    legacy.write_bytes(b"legacy-plugin")
+                script = (core.VIETNAMESE_LANGUAGE / "update_conf.sh").read_text()
+                replacements = {
+                    "/usr/local/Kobo/imageformats/libtiengviet.so": str(legacy),
+                    "/mnt/onboard/.adds/tiengviet/libtiengviet.so.disabled": str(disabled),
+                    "/mnt/onboard/.kobo/Kobo/Kobo eReader.conf": str(config),
+                    "/etc/udev/rules.d/update_conf.rules": str(root / "update_conf.rules"),
+                    "/root/update_conf.sh": str(root / "update_conf.sh"),
+                }
+                for source, target in replacements.items():
+                    script = script.replace(source, target)
+                if core.sys.platform == "darwin":
+                    script = script.replace("sed -i ", "sed -i '' ")
+                for _ in range(2):
+                    script_path = root / "update_conf.sh"
+                    script_path.write_text(script)
+                    (root / "update_conf.rules").touch()
+                    subprocess.run(["sh", str(script_path)], check=True, capture_output=True)
+                self.assertFalse(legacy.exists())
+                self.assertEqual(disabled.exists(), existing)
+                if existing:
+                    self.assertEqual(disabled.read_bytes(), b"legacy-plugin")
+                self.assertIn("ExtraLocales=en, vi\n", config.read_text())
+                self.assertIn("CurrentLocale=vi\n", config.read_text())
+                self.assertIn("KeepSetting=yes\n", config.read_text())
+
+    def test_browser_language_downloads_match_current_payload(self):
+        for name, fonts in (("KoboRoot-language.tgz", False), ("KoboRoot-combined.tgz", True)):
+            with self.subTest(name=name):
+                package = core.ROOT / "vercel-site" / "assets" / name
+                details = core.validate_language_overlay_archive(package)
+                self.assertEqual(details["languageFiles"], 3)
+                self.assertEqual(package.with_suffix(".tgz.sha256").read_text().split()[0], details["sha256"])
+                if fonts:
+                    self.assertEqual(core.validate_font_overlay_archive(package)["fonts"], 20)
 
     def test_install_progress_does_not_finish_during_package_build(self):
         with tempfile.TemporaryDirectory() as value:

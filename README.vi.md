@@ -76,11 +76,13 @@ Tệp dựng sẵn `build/KoboRoot.tgz` chỉ chứa font:
 - 16 font thay thế Avenir, Georgia, Rakuten Sans và Rakuten Serif trong thư mục font hệ thống của Kobo
 - 4 font Courier tương thích trong thư mục font người dùng để hiển thị đúng nội dung monospace
 
-Các font được lấy từ bản phát hành `v20260319` đã xác minh của redphx. Khi chọn **Vietnamese language pack**, bộ cài thêm `trans_vi.qm`, `libtiengviet.so` và hook cấu hình để thêm `Extra: vi` vào danh sách ngôn ngữ Kobo. Gói này không chứa NickelMenu hoặc KOReader.
+Các font được lấy từ bản phát hành `v20260319` đã xác minh của redphx. Khi chọn **Vietnamese language pack**, bộ cài thêm `trans_vi.qm` và hook cấu hình để thêm `Extra: vi` vào danh sách ngôn ngữ Kobo. Gói này không chứa NickelMenu hoặc KOReader.
 
 Bản sửa font và gói ngôn ngữ chỉ được cài trên firmware 4.x. Gói ngôn ngữ có thể được cài riêng không cần font. Nếu `.kobo/KoboRoot.tgz` đã tồn tại, công cụ sẽ sao lưu tệp đó trước khi thay thế.
 
-Nếu muốn cài thêm đầy đủ bàn phím và tính năng tự sửa sau khi cập nhật firmware, hãy sử dụng trực tiếp dự án [Kobo Tiếng Việt](https://github.com/redphx/kobo-tieng-viet) của redphx.
+Gói này không cài `libtiengviet.so`, bàn phím hoặc tính năng tự sửa font. Sau khi cập nhật firmware, hãy cài lại bản sửa font nếu tiếng Việt hiển thị sai.
+
+Nếu đã dùng bộ cài cũ, hãy cài lại **Vietnamese language pack** hoặc **Install Vietnamese support**, tháo Kobo an toàn và chờ máy khởi động lại. Hook cấu hình chuyển thư viện `/usr/local/Kobo/imageformats/libtiengviet.so` hiện có sang `.adds/tiengviet/libtiengviet.so.disabled` để Nickel không tải lại. Cài riêng font không vô hiệu hóa thư viện cũ. Trạng thái USB chỉ kiểm tra cấu hình ngôn ngữ, không xác nhận thư viện hệ thống đang được tải. Chưa có bằng chứng bản vá gây treo toàn máy khi đọc hoặc ngủ.
 
 ### Từ điển cho Kobo
 
